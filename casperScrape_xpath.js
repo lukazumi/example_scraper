@@ -16,6 +16,7 @@ casper.start(siteUrl, function() {
 
     //if the sentences list (ul) exists, process
     //xpath: //*[@id="secondary"]/div/ul
+    var example_list = []
     if (casper.exists(x('.//*[@id="secondary"]/div/ul'))){
         // each sentence is a list item (li)
         //    //*[@id="secondary"]/div/ul/li[1]
@@ -78,20 +79,40 @@ casper.start(siteUrl, function() {
                     jpn = jpn + dictionary[keys[l]]
                 }
                 eng = casper.getElementInfo(x('//*[@id="secondary"]/div/ul/li['+i+']'+'/div[2]/div/span[1]')).html
+                // trim residual html out
+                jpn = jpn.replace('<br />', ' ')
+                eng = eng.replace('<br />', ' ')
                 // replace new lines with breaks, because anki
-                jpn = jpn.replace(/(?:\r\n|\r|\n)/g, '<br />');
-                eng = eng.replace(/(?:\r\n|\r|\n)/g, '<br />');
+                jpn = jpn.replace(/(?:\r\n|\r|\n)/g, ' ');
+                eng = eng.replace(/(?:\r\n|\r|\n)/g, ' ');
                 // replace tabs with a space.
                 var tab = RegExp("\\t", "g");
                 jpn = jpn.replace(tab,'&nbsp;');
                 eng = eng.replace(tab,'&nbsp;');
                 //write to the csv
-                fs.write('examples.txt', searchString + "\t" + jpn + "\t" + eng + "\n", 'a');
+                //fs.write('examples.txt', searchString + "\t" + jpn + "\t" + eng + ";", 'a');
+                example_list.push(jpn + "<br />" + eng)
             }
             else{
                 i=100 //100 is enough
             }
         }
+        var arrayLength = example_list .length;
+        // if its a new keyword
+            fs.write('examples.txt', "\n", 'a');
+            fs.write('examples.txt', searchString, 'a');
+        //else continue on the same line
+
+        for (var itr = 0; itr < arrayLength; itr++) {
+            //  fields are tab seperated, examples are double break seperated, eng,jpn is break seperated.
+            fs.write('examples.txt', "\t" + example_list[itr] + '<br /><br />', 'a');
+        }
+
+
+
+        //need to do an actuall check for more!! (check for the button)  //*[@id="secondary"]/div/a
+
+
         this.echo("thereismore")
         return
     }
