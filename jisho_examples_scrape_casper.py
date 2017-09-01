@@ -19,6 +19,7 @@ def start_bulk_scrap(search_list):
         # scrape_me = url_part1 + url_part2 + url_part3 + "?page=2" #debug, skip to page 2 (above line is real code)
 
         print("scraping " + scrape_me)
+		# the casper js file writes the output text file.
         result = scrape_url(scrape_me, search)
 
         cnt = 2
